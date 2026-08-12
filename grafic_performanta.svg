@@ -1,0 +1,35 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500' style='background-color: #ffffff; font-family: Arial;'>
+<line x1='80' y1='80' x2='80' y2='420' stroke='black' stroke-width='2'/>
+<line x1='80' y1='420' x2='920' y2='420' stroke='black' stroke-width='2'/>
+<polyline points='80.00,120.80 122.00,121.90 164.00,146.04 206.00,183.80 248.00,187.11 290.00,209.61 332.00,247.37 374.00,263.77 416.00,270.23 458.00,277.99 500.00,280.56 542.00,299.45 584.00,305.59 626.00,308.17 668.00,327.05 710.00,331.69 752.00,352.32 794.00,362.43 836.00,365.01 878.00,383.89 920.00,392.80 ' fill='none' stroke='blue' stroke-width='4' opacity='0.7'/>
+<circle cx='80.00' cy='120.80' r='5' fill='blue'/>
+<text x='80.00' y='120.80' dx='-15' dy='-12' font-size='12' fill='darkblue'>6296</text>
+<circle cx='122.00' cy='121.90' r='5' fill='blue'/>
+<circle cx='164.00' cy='146.04' r='5' fill='blue'/>
+<circle cx='206.00' cy='183.80' r='5' fill='blue'/>
+<circle cx='248.00' cy='187.11' r='5' fill='blue'/>
+<text x='248.00' y='187.11' dx='-15' dy='-12' font-size='12' fill='darkblue'>6005</text>
+<circle cx='290.00' cy='209.61' r='5' fill='blue'/>
+<circle cx='332.00' cy='247.37' r='5' fill='blue'/>
+<circle cx='374.00' cy='263.77' r='5' fill='blue'/>
+<circle cx='416.00' cy='270.23' r='5' fill='blue'/>
+<text x='416.00' y='270.23' dx='-15' dy='-12' font-size='12' fill='darkblue'>5641</text>
+<circle cx='458.00' cy='277.99' r='5' fill='blue'/>
+<circle cx='500.00' cy='280.56' r='5' fill='blue'/>
+<circle cx='542.00' cy='299.45' r='5' fill='blue'/>
+<circle cx='584.00' cy='305.59' r='5' fill='blue'/>
+<text x='584.00' y='305.59' dx='-15' dy='-12' font-size='12' fill='darkblue'>5485</text>
+<circle cx='626.00' cy='308.17' r='5' fill='blue'/>
+<circle cx='668.00' cy='327.05' r='5' fill='blue'/>
+<circle cx='710.00' cy='331.69' r='5' fill='blue'/>
+<circle cx='752.00' cy='352.32' r='5' fill='blue'/>
+<text x='752.00' y='352.32' dx='-15' dy='-12' font-size='12' fill='darkblue'>5281</text>
+<circle cx='794.00' cy='362.43' r='5' fill='blue'/>
+<circle cx='836.00' cy='365.01' r='5' fill='blue'/>
+<circle cx='878.00' cy='383.89' r='5' fill='blue'/>
+<circle cx='920.00' cy='392.80' r='5' fill='blue'/>
+<text x='920.00' y='392.80' dx='-15' dy='-12' font-size='12' fill='darkblue'>5103</text>
+<line x1='80' y1='253.53' x2='920' y2='253.53' stroke='red' stroke-width='3' stroke-dasharray='10,10'/>
+<text x='750' y='253.53' dx='10' dy='-10' font-size='16' fill='red' font-weight='bold'>Cost TSP: 5714</text>
+<text x='350' y='50' font-size='22' font-weight='bold' fill='black'>Evolutie BKT vs Limita TSP</text>
+</svg>
