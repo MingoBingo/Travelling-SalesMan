@@ -44,37 +44,7 @@ int main()
     int totalPuncte = 4 * numberOfRooms + 2; 
 
     // ========================================================
-    // RUNDA 1: TSP (Euristica ta initiala)
-    // ========================================================
-    printf("Ruleaza Standard TSP...\n");
-    fflush(stdout); // Forteaza afisarea in consola imediat!
-    
-    float costTSP = 0;
-    clock_t start = clock();
-    Point *traseuTSP = findPath(dockingStation, room, numberOfRooms, &costTSP);
-    clock_t end = clock();
-    double timeTSP = (double)(end - start) / CLOCKS_PER_SEC;
-
-    exportToSVG("harta_1_tsp.svg", traseuTSP, totalPuncte, room, numberOfRooms);
-
-
-    // ========================================================
-    // RUNDA 2: RANDOM 2-OPT (Noul tau algoritm)
-    // ========================================================
-    printf("Ruleaza Random 2-OPT...\n");
-    fflush(stdout);
-    
-    float cost2OPT = 0;
-    start = clock();
-    Point *traseu2OPT = findRandom2OPTPath(dockingStation, dockingStation, room, numberOfRooms, &cost2OPT);
-    end = clock();
-    double time2OPT = (double)(end - start) / CLOCKS_PER_SEC;
-
-    exportToSVG("harta_2_random_2opt.svg", traseu2OPT, totalPuncte, room, numberOfRooms);
-
-
-    // ========================================================
-    // RUNDA 3: BACKTRACKING (Optimul Absolut)
+    // RUNDA 1: BACKTRACKING (Optimul Absolut)
     // ========================================================
     for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
     
@@ -83,26 +53,62 @@ int main()
     float costBKT = 9999999999.0;
     int algorithmPlace = 0;
     float bktHistory[1000] = {10000}; 
-    double timeBKT = 0.0;
     Point *traseuBKT = malloc(sizeof(Point) * totalPuncte);
+    double timeBKT = 0.0;
 
-    printf("Ruleaza Backtracking (Ai putina rabdare, poate dura cateva secunde)...\n");
-    fflush(stdout); // Asta te asigura ca vezi mesajul pe ecran inainte sa inghete in calcule
+    printf("Ruleaza Backtracking (Ai putina rabdare, cautam optimul absolut)...\n");
+    fflush(stdout); 
     
-    if (1) 
-    {
-        start = clock();
-        findPathBkt(dockingStation, dockingStation, 0.0, &costBKT, 0, room, numberOfRooms, currentPathBkt, bestPathBkt, &algorithmPlace, bktHistory);
-        end = clock();
-        timeBKT = (double)(end - start) / CLOCKS_PER_SEC;
+    clock_t start = clock();
+    findPathBkt(dockingStation, dockingStation, 0.0, &costBKT, 0, room, numberOfRooms, currentPathBkt, bestPathBkt, &algorithmPlace, bktHistory);
+    clock_t end = clock();
+    timeBKT = (double)(end - start) / CLOCKS_PER_SEC;
 
-        traseuBKT[0] = dockingStation;
-        for(int i = 0; i < 4 * numberOfRooms; i++) traseuBKT[i + 1] = bestPathBkt[i];
-        traseuBKT[totalPuncte - 1] = dockingStation;
+    traseuBKT[0] = dockingStation;
+    for(int i = 0; i < 4 * numberOfRooms; i++) traseuBKT[i + 1] = bestPathBkt[i];
+    traseuBKT[totalPuncte - 1] = dockingStation;
 
-        exportToSVG("harta_3_bkt.svg", traseuBKT, totalPuncte, room, numberOfRooms);
-        exportChartToSVG(bktHistory, algorithmPlace, costTSP, cost2OPT); 
-    } 
+    exportToSVG("harta_1_bkt.svg", traseuBKT, totalPuncte, room, numberOfRooms);
+
+
+    // ========================================================
+    // RUNDA 2: TSP (Euristica ta initiala)
+    // ========================================================
+    for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
+
+    printf("Ruleaza Standard TSP...\n");
+    fflush(stdout); 
+    
+    float costTSP = 0;
+    start = clock();
+    Point *traseuTSP = findPath(dockingStation, room, numberOfRooms, &costTSP);
+    end = clock();
+    double timeTSP = (double)(end - start) / CLOCKS_PER_SEC;
+
+    exportToSVG("harta_2_tsp.svg", traseuTSP, totalPuncte, room, numberOfRooms);
+
+
+    // ========================================================
+    // RUNDA 3: RANDOM 2-OPT (Noul tau algoritm)
+    // ========================================================
+    for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
+
+    printf("Ruleaza Random 2-OPT (cu pistoanele corectate)...\n");
+    fflush(stdout);
+    
+    float cost2OPT = 0;
+    start = clock();
+    Point *traseu2OPT = findRandom2OPTPath(dockingStation, dockingStation, room, numberOfRooms, &cost2OPT);
+    end = clock();
+    double time2OPT = (double)(end - start) / CLOCKS_PER_SEC;
+
+    exportToSVG("harta_3_random_2opt.svg", traseu2OPT, totalPuncte, room, numberOfRooms);
+
+
+    // ========================================================
+    // EXPORT GRAFIC 
+    // ========================================================
+    exportChartToSVG(bktHistory, algorithmPlace, costTSP, cost2OPT); 
 
     // ========================================================
     // AFIȘAREA COMPARAȚIEI SUPREME
@@ -110,9 +116,9 @@ int main()
     printf("\n========================================================\n");
     printf("  BENCHMARK FINALE: Confruntarea Algoritmilor (%d Camere)\n", numberOfRooms);
     printf("========================================================\n");
-    printf("1. Standard TSP : Cost = %10.2f | Timp = %8.6f secunde\n", costTSP, timeTSP);
-    printf("2. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", cost2OPT, time2OPT);
-    printf("3. Backtracking : Cost = %10.2f | Timp = %8.6f secunde\n", costBKT, timeBKT);
+    printf("1. Backtracking : Cost = %10.2f | Timp = %8.6f secunde\n", costBKT, timeBKT);
+    printf("2. Standard TSP : Cost = %10.2f | Timp = %8.6f secunde\n", costTSP, timeTSP);
+    printf("3. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", cost2OPT, time2OPT);
     printf("========================================================\n\n");
 
     // --- CURĂȚENIA MEMORIEI ---

@@ -132,5 +132,5 @@ void exportChartToSVG(float *bktHistory, int historyCount, float tspCost, float 
     fprintf(f, "</svg>\n");
     fclose(f);
 
-    printf("--> Succes! Graficul 'grafic_performanta.svg' a fost actualizat cu noul algoritm.\n");
+    printf("--> Succes! Graficul 'grafic_performanta.svg' a fost actualizat.\n");
 }

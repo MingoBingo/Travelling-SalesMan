@@ -29,7 +29,7 @@ void findPathBkt(Point dockingStation, Point currentStep, float currentCost, flo
         {
             (*minTotalCost) = totalCost;
 
-            for(int i=0; i < numberOfRooms * 4; ++i)
+            for(int i = 0; i < numberOfRooms * 4; ++i)
             {
                 bestPath[i] = currentPath[i];
             }

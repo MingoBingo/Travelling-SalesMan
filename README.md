@@ -12,4 +12,4 @@ The program calculates the optimal path for a robot navigating between multiple 
 ## How to run
 Compile the C file using GCC (make sure to link the math library):
 ```bash
-gcc main.c -o tsp_solver -lm
+gcc main.c backtracking.c export.c geometry.c random_tsp.c tsp.c -o tsp_solver -lm

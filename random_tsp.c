@@ -26,6 +26,29 @@ void reverseOrderRooms(int i, int j, Room *room, Room *aux, int numberOfRooms)
     }
 }
 
+int bestPermutation(Point currentPoint, Room nextRoom)
+{
+    float minCost = 99999.0, permutationCost;
+    int indexMinCostPermutation, originalPermutation;
+    originalPermutation = nextRoom.permutation;
+    for(int p = 0; p < 24; ++p)
+    {
+        permutationCost = 0.0;
+
+        permutationCost += distance(currentPoint, nextRoom.corner[cornerPermutations[p][0]]);
+        permutationCost += distance(nextRoom.corner[cornerPermutations[p][0]], nextRoom.corner[cornerPermutations[p][1]]);
+        permutationCost += distance(nextRoom.corner[cornerPermutations[p][1]], nextRoom.corner[cornerPermutations[p][2]]);
+        permutationCost += distance(nextRoom.corner[cornerPermutations[p][2]], nextRoom.corner[cornerPermutations[p][3]]);
+
+        if(permutationCost < minCost)
+        {
+            minCost = permutationCost;
+            indexMinCostPermutation = p;
+        }
+    }
+    return indexMinCostPermutation;
+}
+
 Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, int numberOfRooms, float *totalCost)
 {
     Point *randomPath = malloc(sizeof(Point) * (numberOfRooms * 4 + 2));
@@ -123,7 +146,8 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
 
                 for(int k = 0; k < numberOfRooms; ++k)
                 {
-                    int idx = aux[k].permutation;
+                    int idx = bestPermutation(currentPoint, aux[k]);
+                    aux[k].permutation = idx;
 
                     auxCost += distance(currentPoint, aux[k].corner[cornerPermutations[idx][0]]);
                     auxCost += distance(aux[k].corner[cornerPermutations[idx][0]], aux[k].corner[cornerPermutations[idx][1]]);
