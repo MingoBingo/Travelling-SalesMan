@@ -7,72 +7,85 @@
 #include "backtracking.h"
 #include "export.h"
 #include "random_tsp.h"
+#include "test_scenarios.h"
+
+void calculateDistances(float **costInteriorMatrix, Room *room, int numberOfRooms, const int inOutPermutations[12][2])
+{
+    for(int i = 0; i < numberOfRooms; ++i)
+    {
+        for(int j = 0; j < 12; ++j)
+        {
+            costInteriorMatrix[i][j] = distance(room[i].corner[inOutPermutations[j][0]], room[i].corner[inOutPermutations[j][1]]);
+        }
+    }
+}
 
 int main()
 {
     srand(time(NULL));
 
-    // 1. Definim datele de start
-    int numberOfRooms = 5;
+    // ========================================================
+    // SETĂRI GENERALE
+    // ========================================================
+    // SCHIMBĂ AICI: 1 = Activat, 0 = Dezactivat
+    int RUN_BACKTRACKING = 0; 
+    
     Point dockingStation = {0, 0};
-    
-    // Alocam camerele 
+    int numberOfRooms = N_SINGLE;
     Room *room = calloc(numberOfRooms, sizeof(Room));
+    loadScenario_Circle(room, numberOfRooms);
+    // Alocam camerele 
     
-    // --- MOCK DATA: 5 CAMERE ---
     
-    // R0: Nord-Est
-    room[0].corner[0] = (Point){100, 100}; room[0].corner[1] = (Point){300, 100};
-    room[0].corner[2] = (Point){300, 300}; room[0].corner[3] = (Point){100, 300};
-
-    // R1: Nord-Vest
-    room[1].corner[0] = (Point){-400, 200}; room[1].corner[1] = (Point){-200, 200};
-    room[1].corner[2] = (Point){-200, 500}; room[1].corner[3] = (Point){-400, 500};
-
-    // R2: Sud-Est
-    room[2].corner[0] = (Point){500, -500}; room[2].corner[1] = (Point){800, -500};
-    room[2].corner[2] = (Point){800, -800}; room[2].corner[3] = (Point){500, -800};
-
-    // R3: Sud-Vest
-    room[3].corner[0] = (Point){-300, -200}; room[3].corner[1] = (Point){-100, -200};
-    room[3].corner[2] = (Point){-100, -400}; room[3].corner[3] = (Point){-300, -400};
-
-    // R4: Departe în Est
-    room[4].corner[0] = (Point){900, 100};  room[4].corner[1] = (Point){1200, 100};
-    room[4].corner[2] = (Point){1200, 400}; room[4].corner[3] = (Point){900, 400};
-
-    int totalPuncte = 4 * numberOfRooms + 2; 
-
-    // ========================================================
-    // RUNDA 1: BACKTRACKING (Optimul Absolut)
-    // ========================================================
-    for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
     
-    Point *currentPathBkt = malloc(sizeof(Point) * (4 * numberOfRooms));
-    Point *bestPathBkt = malloc(sizeof(Point) * (4 * numberOfRooms));
-    float costBKT = 9999999999.0;
+
+    int puncteNou = 2 * numberOfRooms + 2; 
+    int puncteVechi = 4 * numberOfRooms + 2; 
+
+    // Alocare variabile pentru BKT (chiar dacă nu rulează, trebuie să existe pentru siguranța la free())
+    Point *currentPathBkt = NULL;
+    Point *bestPathBkt = NULL;
+    Point *traseuBKT = NULL;
+    float costBKT = 9999999.0;
+    double timeBKT = 0.0;
     int algorithmPlace = 0;
     float bktHistory[1000] = {10000}; 
-    Point *traseuBKT = malloc(sizeof(Point) * totalPuncte);
-    double timeBKT = 0.0;
 
-    printf("Ruleaza Backtracking (Ai putina rabdare, cautam optimul absolut)...\n");
-    fflush(stdout); 
-    
-    clock_t start = clock();
-    findPathBkt(dockingStation, dockingStation, 0.0, &costBKT, 0, room, numberOfRooms, currentPathBkt, bestPathBkt, &algorithmPlace, bktHistory);
-    clock_t end = clock();
-    timeBKT = (double)(end - start) / CLOCKS_PER_SEC;
-
-    traseuBKT[0] = dockingStation;
-    for(int i = 0; i < 4 * numberOfRooms; i++) traseuBKT[i + 1] = bestPathBkt[i];
-    traseuBKT[totalPuncte - 1] = dockingStation;
-
-    exportToSVG("harta_1_bkt.svg", traseuBKT, totalPuncte, room, numberOfRooms);
-
+    float **costInteriorMatrix = malloc(sizeof(float *) * numberOfRooms);
+    for(int cnt = 0; cnt < numberOfRooms; ++cnt)
+    {
+        costInteriorMatrix[cnt] = malloc(sizeof(float) * 12);
+    }
+    calculateDistances(costInteriorMatrix, room, numberOfRooms, inOutPermutations);
 
     // ========================================================
-    // RUNDA 2: TSP (Euristica ta initiala)
+    // RUNDA 1: BACKTRACKING (Condiționat)
+    // ========================================================
+    if (RUN_BACKTRACKING)
+    {
+        for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
+        
+        currentPathBkt = malloc(sizeof(Point) * (2 * numberOfRooms));
+        bestPathBkt = malloc(sizeof(Point) * (2 * numberOfRooms));
+        traseuBKT = malloc(sizeof(Point) * puncteNou);
+        
+        printf("Ruleaza Backtracking (Ai putina rabdare, cautam optimul absolut)...\n");
+        fflush(stdout); 
+        
+        clock_t start = clock();
+        findPathBkt(dockingStation, dockingStation, 0.0, &costBKT, 0, room, numberOfRooms, currentPathBkt, bestPathBkt, &algorithmPlace, bktHistory, costInteriorMatrix);
+        clock_t end = clock();
+        timeBKT = (double)(end - start) / CLOCKS_PER_SEC;
+
+        traseuBKT[0] = dockingStation;
+        for(int i = 0; i < 2 * numberOfRooms; i++) traseuBKT[i + 1] = bestPathBkt[i];
+        traseuBKT[puncteNou - 1] = dockingStation;
+
+        exportToSVG("harta_1_bkt.svg", traseuBKT, puncteNou, room, numberOfRooms);
+    }
+
+    // ========================================================
+    // RUNDA 2: TSP (Euristica Standard)
     // ========================================================
     for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
 
@@ -80,35 +93,37 @@ int main()
     fflush(stdout); 
     
     float costTSP = 0;
-    start = clock();
+    clock_t startTSP = clock();
     Point *traseuTSP = findPath(dockingStation, room, numberOfRooms, &costTSP);
-    end = clock();
-    double timeTSP = (double)(end - start) / CLOCKS_PER_SEC;
+    clock_t endTSP = clock();
+    double timeTSP = (double)(endTSP - startTSP) / CLOCKS_PER_SEC;
 
-    exportToSVG("harta_2_tsp.svg", traseuTSP, totalPuncte, room, numberOfRooms);
+    exportToSVG("harta_2_tsp.svg", traseuTSP, puncteVechi, room, numberOfRooms);
 
 
     // ========================================================
-    // RUNDA 3: RANDOM 2-OPT (Noul tau algoritm)
+    // RUNDA 3: RANDOM 2-OPT (Noul tău algoritm)
     // ========================================================
     for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
 
-    printf("Ruleaza Random 2-OPT (cu pistoanele corectate)...\n");
+    printf("Ruleaza Random 2-OPT (cu Programare Dinamica)...\n");
     fflush(stdout);
     
-    float cost2OPT = 0;
-    start = clock();
+    float cost2OPT = 999999999.0;
+    clock_t start2OPT = clock();
     Point *traseu2OPT = findRandom2OPTPath(dockingStation, dockingStation, room, numberOfRooms, &cost2OPT);
-    end = clock();
-    double time2OPT = (double)(end - start) / CLOCKS_PER_SEC;
+    clock_t end2OPT = clock();
+    double time2OPT = (double)(end2OPT - start2OPT) / CLOCKS_PER_SEC;
 
-    exportToSVG("harta_3_random_2opt.svg", traseu2OPT, totalPuncte, room, numberOfRooms);
+    exportToSVG("harta_3_random_2opt.svg", traseu2OPT, puncteNou, room, numberOfRooms);
 
 
     // ========================================================
     // EXPORT GRAFIC 
     // ========================================================
-    exportChartToSVG(bktHistory, algorithmPlace, costTSP, cost2OPT); 
+    if (RUN_BACKTRACKING) {
+        exportChartToSVG(bktHistory, algorithmPlace, costTSP, cost2OPT); 
+    }
 
     // ========================================================
     // AFIȘAREA COMPARAȚIEI SUPREME
@@ -116,14 +131,26 @@ int main()
     printf("\n========================================================\n");
     printf("  BENCHMARK FINALE: Confruntarea Algoritmilor (%d Camere)\n", numberOfRooms);
     printf("========================================================\n");
-    printf("1. Backtracking : Cost = %10.2f | Timp = %8.6f secunde\n", costBKT, timeBKT);
+    
+    if (RUN_BACKTRACKING) {
+        printf("1. Backtracking : Cost = %10.2f | Timp = %8.6f secunde\n", costBKT, timeBKT);
+    } else {
+        printf("1. Backtracking : [ DEZACTIVAT pentru %d camere ]\n", numberOfRooms);
+    }
+    
     printf("2. Standard TSP : Cost = %10.2f | Timp = %8.6f secunde\n", costTSP, timeTSP);
     printf("3. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", cost2OPT, time2OPT);
     printf("========================================================\n\n");
 
     // --- CURĂȚENIA MEMORIEI ---
-    free(currentPathBkt); free(bestPathBkt); free(traseuBKT);
+    if (currentPathBkt) free(currentPathBkt); 
+    if (bestPathBkt) free(bestPathBkt); 
+    if (traseuBKT) free(traseuBKT);
+    
     free(room); free(traseuTSP); free(traseu2OPT);
+    
+    for(int i = 0; i < numberOfRooms; ++i) free(costInteriorMatrix[i]);
+    free(costInteriorMatrix);
     
     return 0;
 }

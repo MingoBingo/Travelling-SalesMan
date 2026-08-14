@@ -19,7 +19,7 @@ void findMinRoom(Point A, Room *room, int numberOfRooms,
                 }
             }
         }
-        if((*min_distance) != 99999.0)
+        if((*min_distance) != 9999999.0)
             (*totalCost) += (*min_distance);
     }
 
@@ -32,7 +32,7 @@ void microTSP(Point *result, int *resIndex, int min_point_index,
 
     for(int i = 0; i < 3; ++i)
     {
-        min_dist = 99999.0;
+        min_dist = 9999999.0;
         next_corner_index = -1;
         for(int j = 0; j < 4; ++j)
         {
@@ -50,7 +50,7 @@ void microTSP(Point *result, int *resIndex, int min_point_index,
         result[(*resIndex)].x = room.corner[next_corner_index].x;
         result[(*resIndex)].y = room.corner[next_corner_index].y;
         
-        if(min_dist != 99999.0)
+        if(min_dist != 9999999.0)
             (*totalCost) += min_dist;
         
         (*resIndex)++;
@@ -67,7 +67,7 @@ Point *findPath(Point dockingStation, Room *room, int numberOfRooms, float *tota
     Point *result = malloc(sizeof(Point) * (4 * numberOfRooms + 2));
     int resIndex = 0;
 
-    float min_distance = 99999.0;
+    float min_distance = 9999999.0;
     int min_room_index, min_point_index;
     findMinRoom(dockingStation, room, numberOfRooms, &min_room_index,
         &min_point_index, &min_distance, totalCost);
@@ -79,7 +79,7 @@ Point *findPath(Point dockingStation, Room *room, int numberOfRooms, float *tota
 
     for(int i = 0; i < numberOfRooms; ++i)
     {
-        min_distance = 99999.0;
+        min_distance = 9999999.0;
         int visited[4] = {0};
         result[resIndex].x = room[min_room_index].corner[min_point_index].x;
         result[resIndex].y = room[min_room_index].corner[min_point_index].y;
