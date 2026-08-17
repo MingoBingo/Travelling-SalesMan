@@ -109,14 +109,14 @@ float DP(Point dockingStation, Room *room, int numberOfRooms, float **costMatrix
 
             currDoor = connectionMatrix[plex][currDoor];
         }
-        
+
         return minCost;
 }
 
 Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, int numberOfRooms, float *totalCost)
 {
     Point *randomPath = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
-
+    Point *bestPath = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
 
     float **costMatrix = malloc(sizeof(float *) * numberOfRooms);
     int **connectionMatrix = malloc(sizeof(int *) * numberOfRooms);
@@ -271,7 +271,11 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
                 {
                     (*totalCost) = minCost;
                     foundImprovement = 1;
-                    break;
+
+                    /*for(int klop = 0; klop < numberOfRooms * 2 + 2; ++klop)
+                        bestPath[klop] = randomPath[klop];
+                    */
+                   break;
                 }
                 else
                 {
@@ -290,5 +294,6 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
 
     free(connectionMatrix);
     free(costMatrix);
+    free(bestPath);
     return randomPath;
 }

@@ -31,7 +31,7 @@ int main()
     int RUN_BACKTRACKING = 0; 
     
     Point dockingStation = {0, 0};
-    int numberOfRooms = N_SINGLE;
+    int numberOfRooms = N_GRID_MAX;
     Room *room = calloc(numberOfRooms, sizeof(Room));
     loadScenario_Circle(room, numberOfRooms);
     // Alocam camerele 
@@ -110,19 +110,40 @@ int main()
     fflush(stdout);
     
     float cost2OPT = 999999999.0;
-    clock_t start2OPT = clock();
-    Point *traseu2OPT = findRandom2OPTPath(dockingStation, dockingStation, room, numberOfRooms, &cost2OPT);
-    clock_t end2OPT = clock();
-    double time2OPT = (double)(end2OPT - start2OPT) / CLOCKS_PER_SEC;
+    float costMIN2OPT =  999999999.0;
 
-    exportToSVG("harta_3_random_2opt.svg", traseu2OPT, puncteNou, room, numberOfRooms);
+    Point *traseu2OPT = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
+
+    double time2OPT;
+
+    Point *traseuOptim = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
+
+    for(int i = 0; i < 5; ++i)
+    {
+        cost2OPT = 999999999.0;
+        clock_t start2OPT = clock();
+        traseu2OPT = findRandom2OPTPath(dockingStation, dockingStation, room, numberOfRooms, &cost2OPT);
+        clock_t end2OPT = clock();
+        time2OPT = (double)(end2OPT - start2OPT) / CLOCKS_PER_SEC;
+
+        if(cost2OPT < costMIN2OPT)
+        {
+            costMIN2OPT = cost2OPT;
+            for(int contor = 0; contor < puncteNou; ++contor)
+                traseuOptim[contor] = traseu2OPT[contor];
+        }
+        free(traseu2OPT);
+    }
+    
+
+    exportToSVG("harta_3_random_2opt.svg", traseuOptim, puncteNou, room, numberOfRooms);
 
 
     // ========================================================
     // EXPORT GRAFIC 
     // ========================================================
     if (RUN_BACKTRACKING) {
-        exportChartToSVG(bktHistory, algorithmPlace, costTSP, cost2OPT); 
+        exportChartToSVG(bktHistory, algorithmPlace, costTSP, costMIN2OPT); 
     }
 
     // ========================================================
@@ -139,7 +160,7 @@ int main()
     }
     
     printf("2. Standard TSP : Cost = %10.2f | Timp = %8.6f secunde\n", costTSP, timeTSP);
-    printf("3. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", cost2OPT, time2OPT);
+    printf("3. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", costMIN2OPT, 5 * time2OPT);
     printf("========================================================\n\n");
 
     // --- CURĂȚENIA MEMORIEI ---
@@ -147,7 +168,7 @@ int main()
     if (bestPathBkt) free(bestPathBkt); 
     if (traseuBKT) free(traseuBKT);
     
-    free(room); free(traseuTSP); free(traseu2OPT);
+    free(room); free(traseuTSP); free(traseuOptim); 
     
     for(int i = 0; i < numberOfRooms; ++i) free(costInteriorMatrix[i]);
     free(costInteriorMatrix);
