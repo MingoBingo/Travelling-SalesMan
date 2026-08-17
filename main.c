@@ -25,24 +25,21 @@ int main()
     srand(time(NULL));
 
     // ========================================================
-    // SETĂRI GENERALE
+    // GENERAL SETTINGS
     // ========================================================
-    // SCHIMBĂ AICI: 1 = Activat, 0 = Dezactivat
+    // CHANGE HERE: 1 = Enabled, 0 = Disabled
     int RUN_BACKTRACKING = 0; 
     
     Point dockingStation = {0, 0};
     int numberOfRooms = N_GRID_MAX;
     Room *room = calloc(numberOfRooms, sizeof(Room));
     loadScenario_Circle(room, numberOfRooms);
-    // Alocam camerele 
+    // Allocate the rooms 
     
-    
-    
-
     int puncteNou = 2 * numberOfRooms + 2; 
     int puncteVechi = 4 * numberOfRooms + 2; 
 
-    // Alocare variabile pentru BKT (chiar dacă nu rulează, trebuie să existe pentru siguranța la free())
+    // Allocate variables for BKT (even if it doesn't run, they must exist for safety during free())
     Point *currentPathBkt = NULL;
     Point *bestPathBkt = NULL;
     Point *traseuBKT = NULL;
@@ -59,7 +56,7 @@ int main()
     calculateDistances(costInteriorMatrix, room, numberOfRooms, inOutPermutations);
 
     // ========================================================
-    // RUNDA 1: BACKTRACKING (Condiționat)
+    // ROUND 1: BACKTRACKING (Conditional)
     // ========================================================
     if (RUN_BACKTRACKING)
     {
@@ -69,7 +66,7 @@ int main()
         bestPathBkt = malloc(sizeof(Point) * (2 * numberOfRooms));
         traseuBKT = malloc(sizeof(Point) * puncteNou);
         
-        printf("Ruleaza Backtracking (Ai putina rabdare, cautam optimul absolut)...\n");
+        printf("Running Backtracking (Please be patient, searching for the absolute optimum)...\n");
         fflush(stdout); 
         
         clock_t start = clock();
@@ -85,11 +82,11 @@ int main()
     }
 
     // ========================================================
-    // RUNDA 2: TSP (Euristica Standard)
+    // ROUND 2: TSP (Standard Heuristic)
     // ========================================================
     for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
 
-    printf("Ruleaza Standard TSP...\n");
+    printf("Running Standard TSP...\n");
     fflush(stdout); 
     
     float costTSP = 0;
@@ -102,11 +99,11 @@ int main()
 
 
     // ========================================================
-    // RUNDA 3: RANDOM 2-OPT (Noul tău algoritm)
+    // ROUND 3: RANDOM 2-OPT (Your new algorithm)
     // ========================================================
     for(int i = 0; i < numberOfRooms; i++) room[i].visited = 0; 
 
-    printf("Ruleaza Random 2-OPT (cu Programare Dinamica)...\n");
+    printf("Running Random 2-OPT (with Dynamic Programming)...\n");
     fflush(stdout);
     
     float cost2OPT = 999999999.0;
@@ -135,35 +132,34 @@ int main()
         free(traseu2OPT);
     }
     
-
     exportToSVG("harta_3_random_2opt.svg", traseuOptim, puncteNou, room, numberOfRooms);
 
 
     // ========================================================
-    // EXPORT GRAFIC 
+    // GRAPHIC EXPORT 
     // ========================================================
     if (RUN_BACKTRACKING) {
         exportChartToSVG(bktHistory, algorithmPlace, costTSP, costMIN2OPT); 
     }
 
     // ========================================================
-    // AFIȘAREA COMPARAȚIEI SUPREME
+    // DISPLAY ULTIMATE COMPARISON
     // ========================================================
     printf("\n========================================================\n");
-    printf("  BENCHMARK FINALE: Confruntarea Algoritmilor (%d Camere)\n", numberOfRooms);
+    printf("  FINAL BENCHMARKS: Algorithm Showdown (%d Rooms)\n", numberOfRooms);
     printf("========================================================\n");
     
     if (RUN_BACKTRACKING) {
-        printf("1. Backtracking : Cost = %10.2f | Timp = %8.6f secunde\n", costBKT, timeBKT);
+        printf("1. Backtracking : Cost = %10.2f | Time = %8.6f seconds\n", costBKT, timeBKT);
     } else {
-        printf("1. Backtracking : [ DEZACTIVAT pentru %d camere ]\n", numberOfRooms);
+        printf("1. Backtracking : [ DISABLED for %d rooms ]\n", numberOfRooms);
     }
     
-    printf("2. Standard TSP : Cost = %10.2f | Timp = %8.6f secunde\n", costTSP, timeTSP);
-    printf("3. Random 2-OPT : Cost = %10.2f | Timp = %8.6f secunde\n", costMIN2OPT, 5 * time2OPT);
+    printf("2. Standard TSP : Cost = %10.2f | Time = %8.6f seconds\n", costTSP, timeTSP);
+    printf("3. Random 2-OPT : Cost = %10.2f | Time = %8.6f seconds\n", costMIN2OPT, 5 * time2OPT);
     printf("========================================================\n\n");
 
-    // --- CURĂȚENIA MEMORIEI ---
+    // --- MEMORY CLEANUP ---
     if (currentPathBkt) free(currentPathBkt); 
     if (bestPathBkt) free(bestPathBkt); 
     if (traseuBKT) free(traseuBKT);
