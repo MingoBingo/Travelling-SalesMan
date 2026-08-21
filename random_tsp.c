@@ -21,30 +21,6 @@ void reverseOrderRooms(int i, int j, Room *room)
         right--;
     }
 }
-/*
-int bestPermutation(Point currentPoint, Room nextRoom)
-{
-    float minCost = 99999.0, permutationCost;
-    int indexMinCostPermutation, originalPermutation;
-    originalPermutation = nextRoom.permutation;
-    for(int p = 0; p < 24; ++p)
-    {
-        permutationCost = 0.0;
-
-        permutationCost += distance(currentPoint, nextRoom.corner[cornerPermutations[p][0]]);
-        permutationCost += distance(nextRoom.corner[cornerPermutations[p][0]], nextRoom.corner[cornerPermutations[p][1]]);
-        permutationCost += distance(nextRoom.corner[cornerPermutations[p][1]], nextRoom.corner[cornerPermutations[p][2]]);
-        permutationCost += distance(nextRoom.corner[cornerPermutations[p][2]], nextRoom.corner[cornerPermutations[p][3]]);
-
-        if(permutationCost < minCost)
-        {
-            minCost = permutationCost;
-            indexMinCostPermutation = p;
-        }
-    }
-    return indexMinCostPermutation;
-}
-*/
 
 float DP(Point dockingStation, Room *room, int numberOfRooms, float **costMatrix, int **connectionMatrix, Point *randomPath)
 {
@@ -115,6 +91,11 @@ float DP(Point dockingStation, Room *room, int numberOfRooms, float **costMatrix
 
 Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, int numberOfRooms, float *totalCost)
 {
+    if(numberOfRooms <= 0 )
+    {
+        *totalCost = 0.0f;
+        return NULL;
+    }
     Point *randomPath = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
     Point *bestPath = malloc(sizeof(Point) * (numberOfRooms * 2 + 2));
 
@@ -137,134 +118,26 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
     }
 
     *totalCost = DP(dockingStation, room, numberOfRooms, costMatrix, connectionMatrix, randomPath);
-    /*
-    for(int i = numberOfRooms - 2; i >= 0; --i)
-    {
-
-        
-        int j = rand() % 24;
-        
-        (*totalCost) += distance(currentPoint, room[i].corner[cornerPermutations[j][0]]);
-        (*totalCost) += distance(room[i].corner[cornerPermutations[j][0]], room[i].corner[cornerPermutations[j][1]]);
-        (*totalCost) += distance(room[i].corner[cornerPermutations[j][1]], room[i].corner[cornerPermutations[j][2]]);
-        (*totalCost) += distance(room[i].corner[cornerPermutations[j][2]], room[i].corner[cornerPermutations[j][3]]);
-
-        randomPath[(i * 4 + 1)] = room[i].corner[cornerPermutations[j][0]];
-        randomPath[(i * 4 + 2)] = room[i].corner[cornerPermutations[j][1]];
-        randomPath[(i * 4 + 3)] = room[i].corner[cornerPermutations[j][2]];
-        randomPath[(i * 4 + 4)] = room[i].corner[cornerPermutations[j][3]];
-        
-        currentPoint = room[i].corner[cornerPermutations[j][3]];
-
-        room[i].permutation = j;
-        
-    }
-
-    (*totalCost) += distance(currentPoint, dockingStation);
-    */
-
+    
     int foundImprovement;
 
     if(numberOfRooms >= 2)
         foundImprovement = 1;
     else foundImprovement = 0;
 
+    for(int klop = 0; klop < numberOfRooms * 2 + 2; ++klop)
+        bestPath[klop] = randomPath[klop];
+
     while(foundImprovement)
     {
         foundImprovement = 0;
-        /*
-        for(int i = 0; i < numberOfRooms; ++i)
-        {   
-            
-            
-            int originalPermutation = room[i].permutation;
-            for(int p = 0; p < 24; ++p)
-            {
-                if(p == originalPermutation) continue;
-
-                room[i].permutation = p;
-
-                auxCost = 0.0;
-                Point currPoint = dockingStation;
-
-                for(int k = 0; k < numberOfRooms; ++k)
-                {
-                    int idx = room[k].permutation;
-
-                    auxCost += distance(currPoint, room[k].corner[cornerPermutations[idx][0]]);
-                    auxCost += distance(room[k].corner[cornerPermutations[idx][0]], room[k].corner[cornerPermutations[idx][1]]);
-                    auxCost += distance(room[k].corner[cornerPermutations[idx][1]], room[k].corner[cornerPermutations[idx][2]]);
-                    auxCost += distance(room[k].corner[cornerPermutations[idx][2]], room[k].corner[cornerPermutations[idx][3]]);
-
-                    currPoint = room[k].corner[cornerPermutations[idx][3]];
-
-                }
-                
-                auxCost += distance(currentPoint, dockingStation);
-
-                if(auxCost < (*totalCost))
-                {
-                    (*totalCost) = auxCost;
-                    
-                    for(int i = 0; i < numberOfRooms; ++i)
-                    {
-                        int j = room[i].permutation;
-                        randomPath[(i * 4 + 1)] = room[i].corner[cornerPermutations[j][0]];
-                        randomPath[(i * 4 + 2)] = room[i].corner[cornerPermutations[j][1]];
-                        randomPath[(i * 4 + 3)] = room[i].corner[cornerPermutations[j][2]];
-                        randomPath[(i * 4 + 4)] = room[i].corner[cornerPermutations[j][3]];
-                    }
-                    originalPermutation = p;
-                    foundImprovement = 1;
-                }
-                else room[i].permutation = originalPermutation;
-            }
-        }
-        */
+        
         for(int i = 0; i < numberOfRooms - 1; ++i)
         {
             for(int j = i + 1; j < numberOfRooms; ++j)
             {
                 reverseOrderRooms(i, j, room);
-                /*
-                auxCost = 0.0;
-                currentPoint = dockingStation;
-
-                for(int k = 0; k < numberOfRooms; ++k)
-                {
-                    int idx = bestPermutation(currentPoint, aux[k]);
-                    aux[k].permutation = idx;
-
-                    auxCost += distance(currentPoint, aux[k].corner[cornerPermutations[idx][0]]);
-                    auxCost += distance(aux[k].corner[cornerPermutations[idx][0]], aux[k].corner[cornerPermutations[idx][1]]);
-                    auxCost += distance(aux[k].corner[cornerPermutations[idx][1]], aux[k].corner[cornerPermutations[idx][2]]);
-                    auxCost += distance(aux[k].corner[cornerPermutations[idx][2]], aux[k].corner[cornerPermutations[idx][3]]);
-
-                    currentPoint = aux[k].corner[cornerPermutations[idx][3]];
-                }
-
-                auxCost += distance(currentPoint, dockingStation);
-
-                if(auxCost < (*totalCost))
-                {
-                    (*totalCost) = auxCost;
-                    for(int i = 0; i < numberOfRooms; ++i)
-                    {
-                        room[i] = aux[i];
-                    }
-                    for(int i = 0; i < numberOfRooms; ++i)
-                    {
-                        int j = room[i].permutation;
-                        randomPath[(i * 4 + 1)] = room[i].corner[cornerPermutations[j][0]];
-                        randomPath[(i * 4 + 2)] = room[i].corner[cornerPermutations[j][1]];
-                        randomPath[(i * 4 + 3)] = room[i].corner[cornerPermutations[j][2]];
-                        randomPath[(i * 4 + 4)] = room[i].corner[cornerPermutations[j][3]];
-                    }
-
-                    foundImprovement = 1;
-                    break;
-                }
-                */
+                
                 float minCost = DP(dockingStation, room, numberOfRooms, costMatrix, connectionMatrix, randomPath);
                 
                 if(minCost < (*totalCost))
@@ -272,9 +145,9 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
                     (*totalCost) = minCost;
                     foundImprovement = 1;
 
-                    /*for(int klop = 0; klop < numberOfRooms * 2 + 2; ++klop)
+                    for(int klop = 0; klop < numberOfRooms * 2 + 2; ++klop)
                         bestPath[klop] = randomPath[klop];
-                    */
+                    
                    break;
                 }
                 else
@@ -294,6 +167,6 @@ Point *findRandom2OPTPath(Point dockingStation, Point currentPoint, Room *room, 
 
     free(connectionMatrix);
     free(costMatrix);
-    free(bestPath);
-    return randomPath;
+    free(randomPath);
+    return bestPath;
 }

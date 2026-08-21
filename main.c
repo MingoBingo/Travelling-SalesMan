@@ -31,7 +31,7 @@ int main()
     int RUN_BACKTRACKING = 0; 
     
     Point dockingStation = {0, 0};
-    int numberOfRooms = N_GRID_MAX;
+    int numberOfRooms = N_CIRCLE_MAX;
     Room *room = calloc(numberOfRooms, sizeof(Room));
     loadScenario_Circle(room, numberOfRooms);
     // Allocate the rooms 
@@ -131,6 +131,7 @@ int main()
         }
         free(traseu2OPT);
     }
+        
     
     exportToSVG("harta_3_random_2opt.svg", traseuOptim, puncteNou, room, numberOfRooms);
 
